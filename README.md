@@ -13,7 +13,7 @@
 
   - 接受打赏
 
-  <img src="https://github.com/anvsk/ticket_shengsi/blob/main/wechat.JPG" width="180px" />
+  <img src="https://github.com/bawfnje/ticket_shengsi/blob/main/wechat.JPG" width="180px" />
 
 
 ### 运行
