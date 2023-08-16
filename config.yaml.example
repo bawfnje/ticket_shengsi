@@ -2,7 +2,7 @@
 User:
   mobile :  '185xxx89'
   password: 'xxx'
-  # 登录后再请求报文可以看到
+  # 需手动登录后，在请求报文中可以看到并更新，否则会报错
   authentication :  'xxx'
   # 5.2 对年龄超过6周岁但不超过14周岁或者身高超过1.2米但不超过1.5米的未成年人，应当执行客票半价优待。
   # 对有成年人陪伴的年龄不超过6周岁或者身高不超过1.2米，且不占用座（铺）位的未成年人免费并出具免费票（1周岁以下未成年人不计入乘客定额）；
@@ -15,16 +15,16 @@ User:
   childPassengers:
     - 李四
   addFreeChild:
-    - 王五
+    - 张三
   vehicle:
     - 沪A888888
 
 # 出发点
-From: nanpu
+From: shenjiawan
 # 到达点
-To: shengshan
-# 购买日期
-Date: '2021-05-01'
+To: sijiao
+# 购买日期，不指定默认为预售4天后 # 指定日期格式："2023-08-13"
+Date:
 
 # 定制化
 Customization:
@@ -32,8 +32,10 @@ Customization:
   LatestBusTime: ''
   # 船最早的开船时间
   MinShipTime: "10:00"
-  # 船最晚的开车时间
-  LatestShipTime: ''
+  # 船最晚的开船时间
+  LatestShipTime: "15:30"
+  # 检查开船时间顺序 1：从早到晚；-1：从晚到早
+  ShipTimeOrder: 1
   # 指定航班
   LineNum: ''
   # 指定舱位
@@ -41,16 +43,28 @@ Customization:
 
 # 目的地字典
 PortNo:
+  # 上海南浦汽车站
   nanpu: 1046
+  # 嵊泗嵊山
   shengshan: 1016
+  # 嵊泗
   shengsi: 1010
+  # 嵊泗花鸟
   huaniao: 1014
+  # 嵊泗枸杞
   gouqi: 1017
+  # 沈家湾
   shenjiawan: 1028
+  # 嵊泗泗礁
   sijiao: 1010
 
+# 通知服务
 Notice:
-  flag: false
+  # 是否开启
+  flag: False
+  # 通知服务地址
   companyWx: ""
-  toUser: "mailto@me.com"
+  # 通知人地址
+  toUser: ""
+  # MD5加密的盐
   salt: ""

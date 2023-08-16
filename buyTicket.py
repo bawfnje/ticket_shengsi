@@ -55,13 +55,21 @@ def notice(msg):
     expireTime = 1000
     res=get("https://pc.ssky123.com/api/v2/user/order/expireTime?orderId="+orderId,None)
     expireTime = res['data']
+    now = int(time.time()*1000)
+    expireTimeStr = datetime.datetime.fromtimestamp((now + expireTime)/1000).strftime("%Y-%m-%d %H:%M:%S.%f")
     checkToken()
     params = {"userId":userid,"orderId":orderId,"payFee":msg['payFee']}
-    res=post("https://pc.ssky123.com/api/v2/pay/wx/qrcodePay",params)
     qrcodeUrl = ""
-    if res['code'] == 200:
-        qrcodeUrl = res['data']['qrcodeUrl']
-    pyload = 'expireTime='+str(expireTime)+'&msg='+''+'&orderId='+str(orderId)+'&qrcodeUrl='+qrcodeUrl+'&title='+message+'&toUser='+cf['Notice']['toUser']
+    reTry = 3
+    while reTry > 0:
+        res=post("https://pc.ssky123.com/api/v2/pay/wx/qrcodePay",params)
+        if res['code'] == 200:
+            qrcodeUrl = res['data']['qrcodeUrl']
+            break
+        else:
+            reTry = reTry - 1
+            time.sleep(0.1)  
+    pyload = 'expireTime='+expireTimeStr+'&msg='+''+'&orderId='+str(orderId)+'&qrcodeUrl='+qrcodeUrl+'&title='+message+'&toUser='+cf['Notice']['toUser']
     print(datetime.datetime.now(),pyload)
     pyloadSalt=pyload+cf['Notice']['salt']
     md5.update(pyloadSalt.encode('utf-8'))
@@ -187,7 +195,7 @@ while code != 200 and errors<3 and diffDays>0: # and tryTimes<6
     print(datetime.datetime.now(),'===================get Route Info============================')
     if args.date is None or diffDays <4 : #or route is None
         args.date = (datetime.datetime.now() + datetime.timedelta(days=diffDays)).strftime('%Y-%m-%d')
-    print(datetime.datetime.now(),'date:'+args.date,',diffDays:'+str(diffDays))
+    print(datetime.datetime.now(),'date:'+str(args.date),',diffDays:'+str(diffDays))
     shipUrl = "https://pc.ssky123.com/api/v2/line/ship/enq"
     if shipWithCar:
         shipUrl = 'https://www.ssky123.com/api/v2/line/ferry/enq'
@@ -195,12 +203,13 @@ while code != 200 and errors<3 and diffDays>0: # and tryTimes<6
                             {
                                 'startPortNo': cf['PortNo'][args.sfrom],
                                 'endPortNo': cf['PortNo'][args.to],
-                                'startDate': args.date
+                                'startDate': str(args.date)
                             })
     # pprint(query_ticket_res)
     # route = None
     routes = []
-    for tr in query_ticket_res['data'][::1]:
+    timeOrder = cf['Customization']['ShipTimeOrder']
+    for tr in query_ticket_res['data'][::timeOrder]:
         line = str(tr['lineNum']) + str(tr['sx'])
         # pprint(tr)
         # check route
@@ -354,6 +363,9 @@ while code != 200 and errors<3 and diffDays>0: # and tryTimes<6
     # if routes == []:
     print(datetime.datetime.now(),'This\'s over ... .... ')
     # if args.date != datetime.datetime.now().strftime('%Y-%m-%d'):
-    diffDays = diffDays - 1
+    if cf['Date'] is None:
+        diffDays = diffDays - 1
+    else:
+        diffDays = 0
         # continue
 print(datetime.datetime.now(),'>>>>>>>>>>===================end============================<<<<<<<<<<')
